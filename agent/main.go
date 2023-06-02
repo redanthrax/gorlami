@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"sync"
 	"time"
 	"unsafe"
@@ -102,13 +101,15 @@ func (p *program) Run() {
 			log.Fatal(err)
 		}
 
-		cursorPos = uintptr(cursorAddr)
+		//cursorPos = uintptr(cursorAddr)
 
-		min := 10
-		max := 400
-		randGuy := rand.Intn(max-min) + min
+		//min := 10
+		//max := 400
+		//randGuy := rand.Intn(max-min) + min
 
-		syscall.Syscall(cursorPos, 2, uintptr(randGuy), uintptr(randGuy), 0)
+		//syscall.Syscall(cursorPos, 2, uintptr(randGuy), uintptr(randGuy), 0)
+
+		GetScreen()
 
 		writingSync.Lock()
 		programIsRunning = false
