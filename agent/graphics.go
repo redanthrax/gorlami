@@ -1,198 +1,136 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
+	"fmt"
 	"image"
-	"image/jpeg"
-	"log"
+	"image/color"
+	"image/png"
 	"os"
 	"syscall"
 	"unsafe"
 )
 
 var (
-	libGDI32 uintptr
-	token    uintptr
+	modUser32                  = syscall.NewLazyDLL("user32.dll")
+	modGdi32                   = syscall.NewLazyDLL("gdi32.dll")
+	procGetDC                  = modUser32.NewProc("GetDC")
+	procCreateCompatibleDC     = modGdi32.NewProc("CreateCompatibleDC")
+	procCreateCompatibleBitmap = modGdi32.NewProc("CreateCompatibleBitmap")
+	procGetDeviceCaps          = modGdi32.NewProc("GetDeviceCaps")
+	procBitBlt                 = modGdi32.NewProc("BitBlt")
+	procGetDIBits              = modGdi32.NewProc("GetDIBits")
+	procDeleteDC               = modGdi32.NewProc("DeleteDC")
+	procReleaseDC              = modUser32.NewProc("ReleaseDC")
+	procSelectObject           = modGdi32.NewProc("SelectObject")
+	procGetObject              = modGdi32.NewProc("GetObjectW")
 )
 
-type GdiplusStartupInput struct {
-	GdiplusVersion           uint32
-	DebugEventCallback       uintptr
-	SuppressBackgroundThread bool
-	SuppressExternalCodecs   bool
-}
-
-type GdiplusStartupOutput struct {
-	NotificationHook   uintptr
-	NotificationUnhook uintptr
-}
+const (
+	SRCCOPY = 0x00CC0020
+)
 
 type BITMAPINFOHEADER struct {
-	BiSize          uint32
-	BiWidth         int32
-	BiHeight        int32
-	BiPlanes        uint16
-	BiBitCount      uint16
-	BiCompression   uint32
-	BiSizeImage     uint32
-	BiXPelsPerMeter int32
-	BiYPelsPerMeter int32
-	BiClrUsed       uint32
-	BiClrImportant  uint32
+	Size          uint32
+	Width         int32
+	Height        int32
+	Planes        uint16
+	BitCount      uint16
+	Compression   uint32
+	SizeImage     uint32
+	XPelsPerMeter int32
+	YPelsPerMeter int32
+	ClrUsed       uint32
+	ClrImportant  uint32
 }
 
-func LoadLibFunction(name string, function string) (uintptr, error) {
-	lib, err := syscall.LoadLibrary(name)
-	if err != nil {
-		return uintptr(0), err
-	}
-
-	lib32 := uintptr(lib)
-	handle, err := syscall.GetProcAddress(syscall.Handle(lib32), function)
-	if err != nil {
-		return uintptr(0), err
-	}
-
-	return uintptr(handle), nil
+type BITMAP struct {
+	bmType       uint32
+	bmWidth      int32
+	bmHeight     int32
+	bmWidthBytes int32
+	bmPlanes     uint16
+	bmBitsPixel  uint16
+	bmBits       uintptr
 }
 
-func GetScreen() {
-	gdiPlusStartup, err := LoadLibFunction("gdiplus.dll", "GdiplusStartup")
+func CaptureScreen() error {
+	hDC, _, _ := procGetDC.Call(0)
+	defer procReleaseDC.Call(0, hDC)
+
+	hDest, _, _ := procCreateCompatibleDC.Call(hDC)
+	defer procDeleteDC.Call(hDest)
+
+	screenWidth := int32(GetDeviceCaps(syscall.Handle(hDC), 8))   // HORZRES
+	screenHeight := int32(GetDeviceCaps(syscall.Handle(hDC), 10)) // VERTRES
+
+	hBitmap, _, _ := procCreateCompatibleBitmap.Call(hDC, uintptr(screenWidth), uintptr(screenHeight))
+	defer procDeleteDC.Call(hBitmap)
+
+	procSelectObject.Call(hDest, hBitmap)
+
+	_, _, _ = procBitBlt.Call(hDest, 0, 0, uintptr(screenWidth), uintptr(screenHeight), hDC, 0, 0, SRCCOPY)
+
+	bitmapInfoHeader := BITMAPINFOHEADER{
+		Size:          uint32(unsafe.Sizeof(BITMAPINFOHEADER{})),
+		Width:         screenWidth,
+		Height:        -screenHeight,
+		Planes:        1,
+		BitCount:      32,
+		Compression:   0,
+		SizeImage:     0,
+		XPelsPerMeter: 0,
+		YPelsPerMeter: 0,
+		ClrUsed:       0,
+		ClrImportant:  0,
+	}
+
+	var bitmap BITMAP
+	_, _, _ = procGetObject.Call(hBitmap, uintptr(unsafe.Sizeof(bitmap)), uintptr(unsafe.Pointer(&bitmap)))
+
+	bitmapSize := int(bitmap.bmWidthBytes) * int(bitmap.bmHeight)
+	bits := make([]byte, bitmapSize)
+
+	_, _, _ = procGetDIBits.Call(
+		hDest,
+		hBitmap,
+		0,
+		uintptr(screenHeight),
+		uintptr(unsafe.Pointer(&bits[0])),
+		uintptr(unsafe.Pointer(&bitmapInfoHeader)),
+		0,
+	)
+
+	// Create an image.RGBA from the pixel data
+	img := image.NewRGBA(image.Rect(0, 0, int(screenWidth), int(screenHeight)))
+	stride := int(bitmap.bmWidthBytes)
+	for y := 0; y < int(screenHeight); y++ {
+		for x := 0; x < int(screenWidth); x++ {
+			index := (y * stride) + (x * 4)
+			alpha := bits[index+3]
+			red := bits[index+2]
+			green := bits[index+1]
+			blue := bits[index]
+			img.SetRGBA(x, y, color.RGBA{R: red, G: green, B: blue, A: alpha})
+		}
+	}
+
+	// Save the image as PNG
+	pngFile, err := os.Create("screenshot.png")
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("Failed to create PNG file: %v", err)
 	}
+	defer pngFile.Close()
 
-	startupInput := &GdiplusStartupInput{
-		GdiplusVersion: 1,
-	}
-
-	startupOutput := &GdiplusStartupOutput{}
-	status, _, _ := syscall.Syscall(gdiPlusStartup, 3,
-		uintptr(unsafe.Pointer(&token)),
-		uintptr(unsafe.Pointer(startupInput)),
-		uintptr(unsafe.Pointer(startupOutput)))
-
-	if status != 0 {
-		log.Fatalf("Gdi Syscall Error: %d", status)
-	}
-
-	getDesktopWindow, _ := LoadLibFunction("user32.dll", "GetDesktopWindow")
-	hwnd, _, _ := syscall.Syscall(getDesktopWindow, 0, 0, 0, 0)
-	bmp := ScreenCapture(hwnd)
-	//save to memory
-
-	size := unsafe.Sizeof(bmp)
-	b := make([]byte, size)
-	log.Printf("Size of bmp: %d", size)
-	switch size {
-	case 4:
-		binary.LittleEndian.PutUint32(b, uint32(bmp))
-	case 8:
-		binary.LittleEndian.PutUint64(b, uint64(bmp))
-	default:
-		panic("uh oh")
-	}
-
-	log.Printf("Size of b: %d", len(b))
-
-	img, _, err := image.Decode(bytes.NewReader(b))
+	err = png.Encode(pngFile, img)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("Failed to save screenshot as PNG: %v", err)
 	}
 
-	var opt jpeg.Options
-	opt.Quality = 100
-	out, err := os.Create("./output.jpg")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = jpeg.Encode(out, img, &opt)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("Screenshot saved as: screenshot.png")
+	return nil
 }
 
-func ScreenCapture(hwnd uintptr) uintptr {
-	getDC, _ := LoadLibFunction("user32.dll", "GetDC")
-	windowDC, _, _ := syscall.Syscall(getDC, 1, hwnd, 0, 0)
-	createCompatibleDC, err := LoadLibFunction("gdi32.dll", "CreateCompatibleDC")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	windowCompatDC, _, _ := syscall.Syscall(createCompatibleDC, 1, hwnd, 0, 0)
-
-	getSystemMetrics, err := LoadLibFunction("user32.dll", "GetSystemMetrics")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	screenx, _, _ := syscall.Syscall(getSystemMetrics, 1, uintptr(76), 0, 0)
-	screeny, _, _ := syscall.Syscall(getSystemMetrics, 1, uintptr(77), 0, 0)
-	width, _, _ := syscall.Syscall(getSystemMetrics, 1, uintptr(78), 0, 0)
-	height, _, _ := syscall.Syscall(getSystemMetrics, 1, uintptr(79), 0, 0)
-
-	setStretchBltMode, err := LoadLibFunction("gdi32.dll", "SetStretchBltMode")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall(setStretchBltMode, 2, hwnd, uintptr(1), 0)
-	createCompatibleBitmap, err := LoadLibFunction("gdi32.dll", "CreateCompatibleBitmap")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	hbwindow, _, _ := syscall.Syscall(createCompatibleBitmap, 3, hwnd, 100, 100)
-
-	bi := BITMAPINFOHEADER{}
-	bi.BiSize = uint32(unsafe.Sizeof(bi))
-	bi.BiWidth = int32(width)
-	bi.BiHeight = -(int32(height))
-	bi.BiPlanes = 1
-	bi.BiBitCount = 32
-
-	selectObject, err := LoadLibFunction("gdi32.dll", "SelectObject")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall(selectObject, 2, windowCompatDC, hbwindow, 0)
-
-	dwBmpSize := ((int32(width)*int32(bi.BiBitCount) + 31) / 32) * 4 * int32(height)
-	globalAlloc, err := LoadLibFunction("kernel32.dll", "GlobalAlloc")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	hDIB, _, _ := syscall.Syscall(globalAlloc, 2, 0x0042, uintptr(dwBmpSize), 0)
-	lpbitmap, _, _ := syscall.Syscall(globalAlloc, 1, hDIB, 0, 0)
-	stretchBlt, err := LoadLibFunction("gdi32.dll", "StretchBlt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall12(stretchBlt, 11, windowCompatDC, 0, 0,
-		width, height, windowDC, screenx, screeny, width, height, 0xcc0020, 0)
-	getDIBits, err := LoadLibFunction("gdi32.dll", "GetDIBits")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall9(getDIBits, 7, windowCompatDC, hbwindow, 0, height, lpbitmap, uintptr(unsafe.Pointer(&bi)), 0, 0, 0)
-	deleteDC, err := LoadLibFunction("gdi32.dll", "DeleteDC")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall(deleteDC, 1, windowCompatDC, 0, 0)
-	releaseDC, err := LoadLibFunction("user32.dll", "ReleaseDC")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	syscall.Syscall(releaseDC, 1, windowDC, 0, 0)
-	return hbwindow
+func GetDeviceCaps(hdc syscall.Handle, index int) int {
+	ret, _, _ := procGetDeviceCaps.Call(uintptr(hdc), uintptr(index))
+	return int(ret)
 }

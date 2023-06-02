@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"sync"
 	"time"
 	"unsafe"
@@ -101,6 +102,7 @@ func (p *program) Run() {
 			log.Fatal(err)
 		}
 
+		//this is setting mouse position
 		//cursorPos = uintptr(cursorAddr)
 
 		//min := 10
@@ -109,10 +111,11 @@ func (p *program) Run() {
 
 		//syscall.Syscall(cursorPos, 2, uintptr(randGuy), uintptr(randGuy), 0)
 
-		GetScreen()
+		CaptureScreen()
 
 		writingSync.Lock()
 		programIsRunning = false
 		writingSync.Unlock()
+		os.Exit(0)
 	}
 }
