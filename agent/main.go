@@ -111,7 +111,9 @@ func (p *program) Run() {
 
 		//syscall.Syscall(cursorPos, 2, uintptr(randGuy), uintptr(randGuy), 0)
 
-		CaptureScreen()
+		img, err := CaptureScreen()
+		//send img to webrtc
+		_ = img 
 
 		writingSync.Lock()
 		programIsRunning = false

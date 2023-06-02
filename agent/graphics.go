@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
-	"image/png"
-	"os"
 	"syscall"
 	"unsafe"
 )
@@ -53,7 +50,7 @@ type BITMAP struct {
 	bmBits       uintptr
 }
 
-func CaptureScreen() error {
+func CaptureScreen() (*image.RGBA, error) {
 	hDC, _, _ := procGetDC.Call(0)
 	defer procReleaseDC.Call(0, hDC)
 
@@ -114,20 +111,7 @@ func CaptureScreen() error {
 		}
 	}
 
-	// Save the image as PNG
-	pngFile, err := os.Create("screenshot.png")
-	if err != nil {
-		return fmt.Errorf("Failed to create PNG file: %v", err)
-	}
-	defer pngFile.Close()
-
-	err = png.Encode(pngFile, img)
-	if err != nil {
-		return fmt.Errorf("Failed to save screenshot as PNG: %v", err)
-	}
-
-	fmt.Println("Screenshot saved as: screenshot.png")
-	return nil
+	return img, nil
 }
 
 func GetDeviceCaps(hdc syscall.Handle, index int) int {
