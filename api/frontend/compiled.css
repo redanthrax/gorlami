@@ -596,9 +596,11 @@ video {
 .clear-none {
   clear: none;
 }
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.m-3 {
+  margin: 0.75rem;
+}
+.m-4 {
+  margin: 1rem;
 }
 .mt-2 {
   margin-top: 0.5rem;
@@ -678,8 +680,8 @@ video {
 .hidden {
   display: none;
 }
-.h-full {
-  height: 100%;
+.h-screen {
+  height: 100vh;
 }
 .w-full {
   width: 100%;
@@ -939,6 +941,9 @@ video {
 .grid-flow-col-dense {
   grid-auto-flow: column dense;
 }
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .flex-row {
   flex-direction: row;
 }
@@ -1076,6 +1081,9 @@ video {
 }
 .justify-items-stretch {
   justify-items: stretch;
+}
+.gap-4 {
+  gap: 1rem;
 }
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;

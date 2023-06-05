@@ -7,30 +7,26 @@
     <title>Gorlami</title>
     <link rel="stylesheet" href="./compiled.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <script src="htmx.min.js"></script>
   </head>
-  <body class="bg-slate-800 flex items-center justify-center">
-    <h1 class="text-center text-white text-xl">Gorlami Technology</h1>
-    <div id="menu">
-      <ul class="flex">
-        <li>
-          <button class="rounded-full bg-red-500 px-2 mx-2">
-            Connect
-          </button>
-        </li>
-        <li>
-          <button class="rounded-full bg-red-500 px-2 mx-2">
-            Disconnect
-          </button>
-        </li>
-        <li>
-          <button class="rounded-full bg-red-500 px-2 mx-2">
-            Gorlami
-          </button>
-        </li>
-      </ul>
+  <body class="bg-slate-800">
+    <h1 class="text-white text-xl m-3">Gorlami Technology</h1>
+    <div id="menu" class="grid grid-cols-3 gap-4 m-4">
+      <button id="connect" class="rounded-full bg-red-500 px-2"
+        hx-trigger="click"
+        hx-get="/connect" hx-swap="innerHTML"
+        hx-target="#sdp" hx-on="htmx:afterSettle">
+        Connect
+      </button>
+      <button class="rounded-full bg-red-500 px-2">
+        Disconnect
+      </button>
+      <button class="rounded-full bg-red-500 px-2">
+        Gorlami
+      </button>
     </div>
-    <div id="AgentWindow" class="w-full h-full bg-gray-200 flex">
-      Test
+    <div id="sdp"></div>
+    <div id="AgentWindow" class="w-full h-screen bg-gray-200">
     </div>
 	  <script src="index.js"></script>
   </body>
