@@ -596,6 +596,10 @@ video {
 .clear-none {
   clear: none;
 }
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -673,6 +677,12 @@ video {
 }
 .hidden {
   display: none;
+}
+.h-full {
+  height: 100%;
+}
+.w-full {
+  width: 100%;
 }
 .flex-shrink {
   flex-shrink: 1;
@@ -1396,6 +1406,10 @@ video {
 .bg-\[rgb\(255\2c 0\2c 0\)\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 0 0 / var(--tw-bg-opacity));
+}
+.bg-gray-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 .bg-red-500 {
   --tw-bg-opacity: 1;
