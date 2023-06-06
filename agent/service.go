@@ -2,15 +2,17 @@ package main
 
 import (
 	"log"
-	"syscall"
+	"sync"
 	"time"
 
 	"github.com/kardianos/service"
 )
 
-type POINT struct {
-	X, Y int32
-}
+var (
+	serviceIsRunning bool
+	programIsRunning bool
+	writingSync      sync.Mutex
+)
 
 type program struct{}
 
@@ -38,17 +40,13 @@ func (*program) Stop(s service.Service) error {
 }
 
 func (p *program) Run() {
-	lib, err := syscall.LoadLibrary("user32.dll")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	libUser32 = uintptr(lib)
 	for serviceIsRunning {
 		writingSync.Lock()
 		programIsRunning = true
 		writingSync.Unlock()
 
+		//do everything, it's a loop
+		natsConnect()
 		//getMouse()
 		//img, err := CaptureScreen()
 		//send img to webrtc

@@ -8,18 +8,6 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
-func main() {
-	fs := http.FileServer(http.Dir("./frontend"))
-	http.Handle("/", fs)
-	http.HandleFunc("/connect", connect)
-
-	log.Print("Listening on port 3000...")
-	err := http.ListenAndServe("127.0.0.1:3000", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func connect(w http.ResponseWriter, r *http.Request) {
 	log.Println("Connect called...")
 

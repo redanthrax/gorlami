@@ -6,7 +6,22 @@ import (
 	"unsafe"
 )
 
+var (
+	libUser32    uintptr
+	getCursorPos uintptr
+)
+
+type POINT struct {
+	X, Y int32
+}
+
 func getMouse() {
+	lib, err := syscall.LoadLibrary("user32.dll")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	libUser32 = uintptr(lib)
 	//here be work
 	lpPoint := &POINT{}
 	cursorAddr, err := syscall.GetProcAddress(syscall.Handle(libUser32), "GetCursorPos")

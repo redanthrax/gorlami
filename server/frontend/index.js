@@ -2,9 +2,10 @@ const container = document.getElementById('AgentWindow');
 
 function handleOfferResponse(evt) {
     const offer = JSON.parse(evt.target.textContent);
-    createPeerConnection(offer);
+    //createPeerConnection(offer);
 }
 
+/*
 document.addEventListener('htmx:afterSettle', handleOfferResponse);
 
 function createPeerConnection(offer) {
@@ -25,3 +26,4 @@ function createPeerConnection(offer) {
         console.error(error);
     });
 }
+*/

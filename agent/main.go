@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"sync"
 
 	"github.com/kardianos/service"
 )
@@ -11,11 +10,6 @@ const serviceName = "Agent Service"
 const serviceDescription = "Agent Service for Remote Control"
 
 var (
-	serviceIsRunning bool
-	programIsRunning bool
-	writingSync      sync.Mutex
-	libUser32        uintptr
-	getCursorPos     uintptr
 )
 
 func main() {

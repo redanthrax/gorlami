@@ -27,3 +27,5 @@ coverage
 *.sln
 *.sw?
 vendor/
+gorlami.exe
+nats-server.exe
