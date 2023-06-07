@@ -5,6 +5,37 @@ function handleOfferResponse(evt) {
     //createPeerConnection(offer);
 }
 
+const socket = new WebSocket('ws://localhost:3000/ws')
+
+socket.onopen = function(event) {
+    console.log("websocket connection open")
+}
+
+socket.onmessage = function(event) {
+    // Handle received message
+    const receivedMessage = JSON.parse(event.data);
+    console.log("Received message:", receivedMessage.content);
+
+    // Send response
+    const response = {
+        content: "Response from client"
+    };
+    socket.send(JSON.stringify(response));
+};
+
+socket.onclose = function(event) {
+    // Connection closed
+    console.log(event)
+};
+
+function sendMessage(message) {
+    const payload = {
+        content: message
+    };
+
+    socket.send(JSON.stringify(payload));
+}
+
 /*
 document.addEventListener('htmx:afterSettle', handleOfferResponse);
 
