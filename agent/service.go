@@ -46,7 +46,8 @@ func (p *program) Run() {
 		writingSync.Unlock()
 
 		//do everything, it's a loop
-		natsConnect()
+		startNats()
+		registerNats()
 		//getMouse()
 		//img, err := CaptureScreen()
 		//send img to webrtc
@@ -55,4 +56,6 @@ func (p *program) Run() {
 		programIsRunning = false
 		writingSync.Unlock()
 	}
+
+	nc.Close()
 }

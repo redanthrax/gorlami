@@ -12,7 +12,8 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-func startNatsServer() {
+func startNats() {
+	//start the actual server
 	ex, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
@@ -23,19 +24,18 @@ func startNatsServer() {
 	cmd := exec.Command(server)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
 	err = cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func connectNatsServer() {
+func connectNats() {
 	//hold for connection to nats server
 	for {
-		nc, err := nats.Connect(nats.DefaultURL)
+		var err error
+		nc, err = nats.Connect(nats.DefaultURL)
 		if err == nil {
-			nc.Close()
 			break
 		}
 
@@ -46,16 +46,50 @@ func connectNatsServer() {
 	log.Println("Connected to local NATS server")
 }
 
-func subscribeNatsServer() {
-	nc.Subscribe("agents.*", func(msg *nats.Msg) {
+func subscribeNats() {
+	var err error
+	_, err = nc.Subscribe("agents.*", func(msg *nats.Msg) {
 		agentID := strings.TrimPrefix(msg.Subject, "agents.")
-		log.Printf("Receieved message from %s: %s\n", agentID, string(msg.Data))
-
-		response := []byte("Hello")
-		nc.Publish(msg.Reply, response)
+		addAgent(agentID)
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	nc.SetDisconnectHandler(func(nc *nats.Conn) {
-		log.Println("Disconnected...")
+	nc.SetDisconnectErrHandler(func(c *nats.Conn, err error) {
+		log.Println("Disconnected")
 	})
+}
+
+func checkNatsAgents() {
+	for {
+		log.Println("Checking nats agents")
+		remainingAgents := []Agent{}
+		for _, agent := range agents {
+			log.Println("Checking " + agent.ID)
+			msg, err := nc.Request("agents."+agent.ID, []byte("ping"), 1*time.Second)
+			if err != nil {
+				log.Println(err)
+				if len(agents) == 1 {
+					agents = []Agent{}
+				} else {
+					for _, existing := range agents {
+						if existing.ID != agent.ID {
+							remainingAgents = append(remainingAgents, existing)
+						}
+					}
+				}
+			} else {
+				log.Println(string(msg.Data))
+			}
+		}
+
+		if len(remainingAgents) > 0 {
+			agents = remainingAgents
+		}
+
+		//wsSendAgents(agents)
+		log.Printf("Done checking nats agents, %d", len(agents))
+		time.Sleep(5 * time.Second)
+	}
 }

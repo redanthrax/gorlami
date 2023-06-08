@@ -8,28 +8,18 @@
     <link rel="stylesheet" href="./compiled.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <script src="htmx.min.js"></script>
+    <script src="ws.js"></script>
   </head>
   <body class="bg-slate-800">
     <h1 class="text-white text-xl m-3">Gorlami Technology</h1>
-    <div id="menu" class="grid grid-cols-3 gap-4 m-4">
-      <button id="connect" class="rounded-full bg-red-500 px-2"
-        hx-trigger="click"
-        hx-get="/connect" hx-swap="innerHTML"
-        hx-target="#sdp" hx-on="htmx:afterSettle">
-        Connect
-      </button>
-      <button class="rounded-full bg-red-500 px-2">
-        Disconnect
-      </button>
-      <button class="rounded-full bg-red-500 px-2"
-        hx-trigger="click" hx-get="/gorlami"
-        hx-swap="none">
-        Gorlami
-      </button>
+    <div class="flex">
+      <div class="w-1/4 bg-gray-200 p-4 m-4">
+        <h1>Agents</h1>
+        <div id="agents" hx-ext="ws" ws-connect="/ws"></div>
+      </div>
+      <div class="w-3/4 bg-gray-300 p-4 m-4">
+        <h1>Remote</h1>
+      </div>
     </div>
-    <div id="sdp"></div>
-    <div id="AgentWindow" class="w-full h-screen bg-gray-200">
-    </div>
-	  <script src="index.js"></script>
   </body>
 </html>

@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"sync"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
@@ -17,48 +16,43 @@ var (
 	id            uuid.UUID
 )
 
-func natsConnect() {
+func startNats() {
 	natsSync.Lock()
-	if !registered {
-		id = uuid.New()
-		registered = true
-	}
-
 	if !natsConnected {
 		var err error
 		nc, err = nats.Connect(nats.DefaultURL)
 		if err != nil {
-			log.Println(err)
-			natsSync.Unlock()
-			return
+			log.Fatal(err)
 		}
-
-		nc.SetDisconnectHandler(func(nc *nats.Conn) {
-			log.Println("Disconnected...")
-			natsConnected = false
-			natsSync.Unlock()
-		})
-
-		subject := "agents." + id.String()
-		nc.Subscribe(subject, func(msg *nats.Msg) {
-			log.Printf("Received message: %s\n", string(msg.Data))
-
-			// Send a response back to the server
-			response := []byte("Message processed by agent")
-			nc.Publish(msg.Reply, response)
-		})
-
-		message := []byte("Hello")
-		reply, err := nc.Request("agents.server", message, 2*time.Second)
-		if err != nil {
-			log.Println(err)
-			natsSync.Unlock()
-			return
-		}
-
-		log.Printf("Received response from server: %s\n", string(reply.Data))
 
 		natsConnected = true
+
+		log.Println("Connected to nats server")
+	}
+
+	natsSync.Unlock()
+}
+
+func registerNats() {
+	natsSync.Lock()
+	if !registered {
+		id = uuid.New()
+		registered = true
+		subject := "agents." + id.String()
+		err := nc.Publish(subject, []byte("Hello :)"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Agent registered")
+		nc.Subscribe(subject, func(msg *nats.Msg) {
+			request := string(msg.Data)
+			log.Println(request)
+			err := msg.Respond([]byte("pong"))
+			if err != nil {
+				log.Fatal(err)
+			}
+		})
 	}
 
 	natsSync.Unlock()

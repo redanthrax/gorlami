@@ -1,5 +1,7 @@
 const container = document.getElementById('AgentWindow');
 
+//we websockets up in the biotch
+
 function handleOfferResponse(evt) {
     const offer = JSON.parse(evt.target.textContent);
     //createPeerConnection(offer);
@@ -13,14 +15,15 @@ socket.onopen = function(event) {
 
 socket.onmessage = function(event) {
     // Handle received message
-    const receivedMessage = JSON.parse(event.data);
-    console.log("Received message:", receivedMessage.content);
-
-    // Send response
-    const response = {
-        content: "Response from client"
-    };
-    socket.send(JSON.stringify(response));
+    const msg = JSON.parse(event.data);
+    console.log(msg);
+    switch(msg.type) {
+        case "agentlist":
+            console.log(msg.data);
+            break;
+        default:
+            console.log("Unknown Type");
+    }
 };
 
 socket.onclose = function(event) {
@@ -30,6 +33,7 @@ socket.onclose = function(event) {
 
 function sendMessage(message) {
     const payload = {
+        type: 'message',
         content: message
     };
 

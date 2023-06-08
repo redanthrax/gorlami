@@ -7,8 +7,9 @@ import (
 var nc *nats.Conn
 
 func main() {
-	go startNatsServer()
-	connectNatsServer()
-	subscribeNatsServer()
+	//go startNats()
+	//connectNats()
+	//subscribeNats()
+	//go checkNatsAgents()
 	startWebServer()
 }

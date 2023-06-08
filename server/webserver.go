@@ -8,10 +8,13 @@ import (
 )
 
 func startWebServer() {
+	log.Println("Starting webserver")
+	//defer nc.Close()
+	//defer ws.Close()
 	fs := http.FileServer(http.Dir("./frontend"))
 	http.Handle("/", fs)
 
-	//websocket
+	//websockets
 	http.Handle("/ws", websocket.Handler(handleWebSocket))
 
 	//rest api stuff
@@ -19,21 +22,13 @@ func startWebServer() {
 	http.HandleFunc("/gorlami", gorlami)
 
 	//start server
-	go func() {
-		err := http.ListenAndServe("127.0.0.1:3000", nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	log.Print("Listening on port 3000...")
-	//block forever
-	select {}
+	log.Println("Listening on port 3000...")
+	err := http.ListenAndServe("127.0.0.1:3000", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func gorlami(w http.ResponseWriter, r *http.Request) {
-	log.Println("Gorlami is called")
-	subject := "agents.*"
-	message := []byte("this is some gorlami shit")
-	nc.Publish(subject, message)
+	log.Println("Gorlami")
 }

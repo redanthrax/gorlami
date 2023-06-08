@@ -9,9 +9,6 @@ import (
 const serviceName = "Agent Service"
 const serviceDescription = "Agent Service for Remote Control"
 
-var (
-)
-
 func main() {
 	log.Println("Starting service...")
 

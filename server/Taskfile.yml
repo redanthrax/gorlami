@@ -3,5 +3,6 @@ version: '3'
 tasks:
   run:
     cmds:
+      - cd frontend && postcss main.css -o compiled.css
       - go build -o gorlami.exe
       - gorlami.exe
