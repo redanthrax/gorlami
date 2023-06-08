@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"time"
+	"strings"
 
 	"golang.org/x/net/websocket"
 )
@@ -19,13 +19,6 @@ var (
 func handleWebSocket(websock *websocket.Conn) {
 	ws = websock
 	log.Println("Websocket connection established")
-	go func() {
-		for {
-			log.Println("Sending ws message")
-			wsSendAgents()
-			time.Sleep(5 * time.Second)
-		}
-	}()
 
 	for {
 		var receivedMessage Message
@@ -49,17 +42,13 @@ func handleWebSocket(websock *websocket.Conn) {
 
 func wsSendAgents() {
 	if ws != nil {
-		//message := Message{
-		//	Type: "agentlist",
-		//	Data: agents,
-		//}
-
-		msg := `
-			<p hx-swap-oob="beforeend:#agents">asdf</p>
-		`
-		websocket.Message.Send(ws, msg)
+    var sb strings.Builder
+    sb.WriteString(`<div hx-swap-oob="beforeend:#agents">`)
+    //load up the agent list html
+    //append the div
+    sb.WriteString("</div>")
+		websocket.Message.Send(ws, sb.String())
 	}
-
 }
 
 /*

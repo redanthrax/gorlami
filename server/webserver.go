@@ -16,6 +16,7 @@ func startWebServer() {
 
 	//websockets
 	http.Handle("/ws", websocket.Handler(handleWebSocket))
+  http.Handle("/agents", websocket.Handler(handleAgents))
 
 	//rest api stuff
 	http.HandleFunc("/connect", connect)
