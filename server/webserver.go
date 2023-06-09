@@ -9,18 +9,12 @@ import (
 
 func startWebServer() {
 	log.Println("Starting webserver")
-	//defer nc.Close()
-	//defer ws.Close()
+	//serve static site
 	fs := http.FileServer(http.Dir("./frontend"))
 	http.Handle("/", fs)
 
 	//websockets
 	http.Handle("/ws", websocket.Handler(handleWebSocket))
-  http.Handle("/agents", websocket.Handler(handleAgents))
-
-	//rest api stuff
-	http.HandleFunc("/connect", connect)
-	http.HandleFunc("/gorlami", gorlami)
 
 	//start server
 	log.Println("Listening on port 3000...")
@@ -28,8 +22,4 @@ func startWebServer() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func gorlami(w http.ResponseWriter, r *http.Request) {
-	log.Println("Gorlami")
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"strings"
 
@@ -8,64 +9,46 @@ import (
 )
 
 type Message struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+	Type    string          `json:"type"`
+	Payload json.RawMessage `json:"payload"`
 }
 
-var (
-	ws *websocket.Conn
-)
-
-func handleWebSocket(websock *websocket.Conn) {
-	ws = websock
+func handleWebSocket(ws *websocket.Conn) {
 	log.Println("Websocket connection established")
-
+	//send the agent list
+	sendAgents(ws)
 	for {
-		var receivedMessage Message
-		err := websocket.JSON.Receive(ws, &receivedMessage)
-		if err != nil {
-			log.Println("Failed to receive message:", err)
-			break
+		var payload []byte
+		if err := websocket.Message.Receive(ws, &payload); err != nil {
+			log.Println("Error receiving message:", err)
+			return
 		}
 
-		log.Println("Received message:", receivedMessage)
-		switch receivedMessage.Type {
-		case "agents":
-			log.Println("getting agents")
-		case "sdp":
-			log.Println("sdp")
-		default:
-			log.Println("Unknown message type:", receivedMessage.Type)
-		}
+		handleMessage(ws, payload)
 	}
 }
 
-func wsSendAgents() {
-	if ws != nil {
-    var sb strings.Builder
-    sb.WriteString(`<div hx-swap-oob="beforeend:#agents">`)
-    //load up the agent list html
-    //append the div
-    sb.WriteString("</div>")
-		websocket.Message.Send(ws, sb.String())
+func handleMessage(conn *websocket.Conn, payload []byte) {
+	var message Message
+	if err := json.Unmarshal(payload, &message); err != nil {
+		log.Println("Error parsing message:", err)
+		return
+	}
+
+	log.Println(string(payload))
+
+	switch message.Type {
 	}
 }
 
-/*
-func handleChatroom(chat *websocket.Conn) {
-	log.Println("Handeling chats")
-	for {
-		var message Message
-		err := websocket.JSON.Receive(chat, &message)
-		if err != nil {
-			log.Printf("error: %v", err)
-			break
-		}
-
-		content := `
-			<div hx-swap-oob="beforeend:#messages"><p>oi matie</p></div>`
-		_ = websocket.Message.Send(chat, content)
-		log.Println("Sent chataroo")
+func sendAgents(ws *websocket.Conn) {
+	log.Println("Sending agent list")
+	var sb strings.Builder
+	sb.WriteString(`<div hx-swap-oob="innerHTML:#agents">`)
+	for _, agent := range agents {
+		sb.WriteString(`<p>` + agent.ID + `</p>`)
 	}
+
+	sb.WriteString("</div>")
+	websocket.Message.Send(ws, sb.String())
 }
-*/

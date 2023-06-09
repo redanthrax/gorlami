@@ -12,6 +12,10 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
+var (
+	nc *nats.Conn
+)
+
 func startNats() {
 	//start the actual server
 	ex, err := os.Executable()
@@ -61,7 +65,7 @@ func subscribeNats() {
 	})
 }
 
-func checkNatsAgents() {
+func monitorNatsAgents() {
 	for {
 		log.Println("Checking nats agents")
 		remainingAgents := []Agent{}
@@ -88,7 +92,7 @@ func checkNatsAgents() {
 			agents = remainingAgents
 		}
 
-		//wsSendAgents(agents)
+		//wsSendAgent()
 		log.Printf("Done checking nats agents, %d", len(agents))
 		time.Sleep(5 * time.Second)
 	}
