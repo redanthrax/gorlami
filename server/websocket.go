@@ -16,7 +16,7 @@ type Message struct {
 func handleWebSocket(ws *websocket.Conn) {
 	log.Println("Websocket connection established")
 	//send the agent list
-	sendAgents(ws)
+	updateWSClient(ws)
 	for {
 		var payload []byte
 		if err := websocket.Message.Receive(ws, &payload); err != nil {
@@ -39,6 +39,14 @@ func handleMessage(conn *websocket.Conn, payload []byte) {
 
 	switch message.Type {
 	}
+}
+
+func updateWSClient(ws *websocket.Conn) {
+	sendAgents(ws)
+}
+
+func randoAgentList(ws *websocket.Conn) {
+	
 }
 
 func sendAgents(ws *websocket.Conn) {

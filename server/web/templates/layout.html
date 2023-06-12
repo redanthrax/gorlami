@@ -1,0 +1,19 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/styles/compiled.css">
+    <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/hyperscript.min.js"></script>
+    <script src="/static/js/ws.js"></script>
+    <title>Gorlami - {{template "title"}}</title>
+</head>
+<body class="bg-slate-800">
+    <h1 class="text-xl text-white mt-3 ml-3">Gorlami</h1>
+    {{template "body"}}
+</body>
+</html>
+{{end}}
