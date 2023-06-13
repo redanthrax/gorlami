@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"strings"
 
 	"golang.org/x/net/websocket"
 )
@@ -14,7 +13,17 @@ type Message struct {
 }
 
 func handleWebSocket(ws *websocket.Conn) {
+	sessionID := getSession(ws.Request())
+	if sessionID == nil {
+		log.Println("Invalid session")
+		ws.Close()
+		return
+	}
+
+	defer ws.Close()
+
 	log.Println("Websocket connection established")
+	//do mock
 	//send the agent list
 	updateWSClient(ws)
 	for {
@@ -42,21 +51,5 @@ func handleMessage(conn *websocket.Conn, payload []byte) {
 }
 
 func updateWSClient(ws *websocket.Conn) {
-	sendAgents(ws)
-}
-
-func randoAgentList(ws *websocket.Conn) {
-	
-}
-
-func sendAgents(ws *websocket.Conn) {
-	log.Println("Sending agent list")
-	var sb strings.Builder
-	sb.WriteString(`<div hx-swap-oob="innerHTML:#agents">`)
-	for _, agent := range agents {
-		sb.WriteString(`<p>` + agent.ID + `</p>`)
-	}
-
-	sb.WriteString("</div>")
-	websocket.Message.Send(ws, sb.String())
+	//do updates via websockets
 }

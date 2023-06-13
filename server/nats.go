@@ -66,34 +66,20 @@ func subscribeNats() {
 }
 
 func monitorNatsAgents() {
-	for {
-		log.Println("Checking nats agents")
-		remainingAgents := []Agent{}
-		for _, agent := range agents {
-			log.Println("Checking " + agent.ID)
-			msg, err := nc.Request("agents."+agent.ID, []byte("ping"), 1*time.Second)
-			if err != nil {
-				log.Println(err)
-				if len(agents) == 1 {
-					agents = []Agent{}
-				} else {
-					for _, existing := range agents {
-						if existing.ID != agent.ID {
-							remainingAgents = append(remainingAgents, existing)
-						}
-					}
-				}
-			} else {
-				log.Println(string(msg.Data))
-			}
-		}
+	//for {
+	//	log.Println("Checking nats agents")
+	//	for _, agent := range <-agents {
+	//		log.Println("Checking " + agent.ID)
+	//		msg, err := nc.Request("agents."+agent.ID, []byte("ping"), 1*time.Second)
+	//		if err != nil {
+	//			log.Println(err)
+	//		} else {
+	//			log.Println(string(msg.Data))
+	//		}
+	//	}
 
-		if len(remainingAgents) > 0 {
-			agents = remainingAgents
-		}
-
-		//wsSendAgent()
-		log.Printf("Done checking nats agents, %d", len(agents))
-		time.Sleep(5 * time.Second)
-	}
+	//	//wsSendAgent()
+	//	log.Printf("Done checking nats agents, %d", len(agents))
+	//	time.Sleep(5 * time.Second)
+	//}
 }

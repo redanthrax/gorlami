@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/net/websocket"
 )
 
 func startWebServer() {
@@ -15,9 +17,17 @@ func startWebServer() {
 	http.HandleFunc("/", serveTemplate)
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/logout", handleLogout)
+	http.Handle("/ws", websocket.Handler(handleWebSocket))
 
 	//handle sessions
 	go cleanupSessions()
+
+	//initialize agents
+	ch = make(chan []Agent)
+	go observeAgents(ch)
+
+	//mock agents
+	go mockAddRemoveAgents()
 
 	//start server
 	log.Println("Listening on :3000...")
@@ -37,9 +47,10 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		fp = "web/templates/index.html"
 	} else {
-		session := getSession(w, r)
-		log.Printf("%#v\n", session)
+		//make sure we have a good session
+		session := getSession(r)
 		if session == nil {
+			clearSessionCookie(w)
 			http.Redirect(w, r, "/", http.StatusFound)
 		}
 
@@ -61,17 +72,15 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.ExecuteTemplate(w, "layout", nil)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, http.StatusText(500), 500)
-	}
+	handleTemplateData(w, tmpl, r.URL.Path)
+
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
 	//mock login
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+	//normally you'd do db stuff here, not right now
 	if username == "admin" && password == "admin" {
 		log.Println("Login action performed...")
 		session := createSession()
@@ -84,11 +93,22 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleLogout(w http.ResponseWriter, r *http.Request) {
-	session := getSession(w, r)
+	session := getSession(r)
 	if session != nil {
 		deleteSession(session.ID)
 		clearSessionCookie(w)
 	}
 
 	w.Header().Set("HX-Redirect", "/")
+}
+
+func handleTemplateData(w http.ResponseWriter,
+	tmpl *template.Template, path string) {
+	var data interface{}
+	//setup switch case for data here
+	err := tmpl.ExecuteTemplate(w, "layout", data)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, http.StatusText(500), 500)
+	}
 }

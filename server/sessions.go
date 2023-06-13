@@ -50,7 +50,8 @@ func generateSessionID() string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-func getSession(w http.ResponseWriter, r *http.Request) *Session {
+func getSession(r *http.Request) *Session {
+	log.Println("Getting sessions")
 	sessionMutex.Lock()
 	defer sessionMutex.Unlock()
 
@@ -62,8 +63,10 @@ func getSession(w http.ResponseWriter, r *http.Request) *Session {
 	sessionID := cookie.Value
 	session, ok := sessions[sessionID]
 	if !ok || session.ExpiresAt.Before(time.Now()) {
-		deleteSession(sessionID)
-		clearSessionCookie(w)
+		if ok {
+			deleteSession(sessionID)
+		}
+
 		return nil
 	}
 
@@ -94,13 +97,14 @@ func saveSession(session Session, w http.ResponseWriter) {
 }
 
 func deleteSession(sessionID string) {
+	log.Println("Deleting sessions")
 	sessionMutex.Lock()
 	defer sessionMutex.Unlock()
-
 	delete(sessions, sessionID)
 }
 
 func clearSessionCookie(w http.ResponseWriter) {
+	log.Println("Clearing session cookies")
 	cookie := &http.Cookie{
 		Name:     sessionCookieName,
 		Value:    "",
