@@ -6,5 +6,9 @@
     class="bg-white rounded p-2">Logout</button>
 </div>
 <h2 class="text-white m-3">Agents</h2>
-<div id="agents" hx-ws="connect:/ws"></div>
+<div id="agents" hx-ws="connect:/ws">
+    {{ range .Agents }}
+        {{ .ID }}
+    {{ end }}
+</div>
 {{end}}

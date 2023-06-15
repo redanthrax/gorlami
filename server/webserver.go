@@ -23,8 +23,7 @@ func startWebServer() {
 	go cleanupSessions()
 
 	//initialize agents
-	ch = make(chan []Agent)
-	go observeAgents(ch)
+	agents = []Agent{}
 
 	//mock agents
 	go mockAddRemoveAgents()
@@ -73,7 +72,6 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handleTemplateData(w, tmpl, r.URL.Path)
-
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -104,8 +102,19 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 
 func handleTemplateData(w http.ResponseWriter,
 	tmpl *template.Template, path string) {
-	var data interface{}
+	data := make(map[string]interface{})
 	//setup switch case for data here
+	switch path {
+	case "/agents.html":
+		log.Println("Godamnit")
+		log.Printf("%#v\n", agents)
+		data["Agents"] = agents
+	default:
+		data = nil
+	}
+
+	log.Printf("%#v\n", data)
+
 	err := tmpl.ExecuteTemplate(w, "layout", data)
 	if err != nil {
 		log.Print(err.Error())

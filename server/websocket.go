@@ -25,7 +25,7 @@ func handleWebSocket(ws *websocket.Conn) {
 	log.Println("Websocket connection established")
 	//do mock
 	//send the agent list
-	updateWSClient(ws)
+	go updateWSClient(ws)
 	for {
 		var payload []byte
 		if err := websocket.Message.Receive(ws, &payload); err != nil {
@@ -52,4 +52,6 @@ func handleMessage(conn *websocket.Conn, payload []byte) {
 
 func updateWSClient(ws *websocket.Conn) {
 	//do updates via websockets
+	hello := []byte("hello")
+	ws.Write(hello)
 }
