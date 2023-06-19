@@ -26,7 +26,7 @@ func startWebServer() {
 	agents = []Agent{}
 
 	//mock agents
-	go mockAddRemoveAgents()
+	//go mockAddRemoveAgents()
 
 	//start server
 	log.Println("Listening on :3000...")
@@ -71,7 +71,7 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handleTemplateData(w, tmpl, r.URL.Path)
+	handleTemplateData(w, tmpl, r)
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -101,15 +101,17 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleTemplateData(w http.ResponseWriter,
-	tmpl *template.Template, path string) {
-  log.Printf("Loading template %s\n", path)
+	tmpl *template.Template, r *http.Request) {
   var err error
 	//setup switch case for data here
-	switch path {
+	switch r.URL.Path {
 	case "/agents.html":
 	  err = tmpl.ExecuteTemplate(w, "layout", agents)
   case "/connect.html":
-    err = tmpl.ExecuteTemplate(w, "layout", nil)
+    id := r.URL.Query().Get("id")
+    //tell the agent to start a webrtc session
+    //pass the session id to the template
+    err = tmpl.ExecuteTemplate(w, "layout", id)
 	default:
     log.Println("Fell through to default template")
     err = tmpl.ExecuteTemplate(w, "layout", nil)
