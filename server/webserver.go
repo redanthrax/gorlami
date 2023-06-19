@@ -102,23 +102,19 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 
 func handleTemplateData(w http.ResponseWriter,
 	tmpl *template.Template, path string) {
-	data := make(map[string]interface{})
+  log.Printf("Loading template %s\n", path)
+  var err error
 	//setup switch case for data here
 	switch path {
 	case "/agents.html":
-    log.Printf("%#v\n", agents)
-		data["Agents"] = agents
+	  err = tmpl.ExecuteTemplate(w, "layout", agents)
+  case "/connect.html":
+    err = tmpl.ExecuteTemplate(w, "layout", nil)
 	default:
-		data = nil
+    log.Println("Fell through to default template")
+    err = tmpl.ExecuteTemplate(w, "layout", nil)
 	}
 
-  wat := []Agent {
-    {
-      ID: "adfaf-asdfasf-dfasf-asdf",
-    },
-  }
-
-	err := tmpl.ExecuteTemplate(w, "layout", wat)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, http.StatusText(500), 500)

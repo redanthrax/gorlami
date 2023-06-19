@@ -1,15 +1,19 @@
-{{define "title"}}Login{{end}}
+{{define "title"}}Agents{{end}}
 
 {{define "body"}}
-<div id="menu" class="m2">
-    <button hx-post="/logout"
-    class="bg-white rounded p-2">Logout</button>
+<div id="menu" class="m-3">
+    <button hx-post="/logout" class="bg-white rounded p-2">Logout</button>
 </div>
 <h2 class="text-white m-3">Agents</h2>
-<div id="agents" hx-ws="connect:/ws">
-    {{ . }}
-    {{ range .Agents }}
-        {{ .ID }}
-    {{ end }}
+<div class="text-white m-3" id="agents">
+{{range .}}
+  <p>Agent: {{.ID}}
+    <a class="text-red-500 underline"
+      target="_blank"
+      href="/connect.html?{{.ID}}">
+      Connect
+    </a>
+  </p>
+{{ end }}
 </div>
 {{end}}

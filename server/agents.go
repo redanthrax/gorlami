@@ -9,6 +9,7 @@ import (
 )
 
 type Agent struct {
+  Name string
 	ID string
 }
 
