@@ -106,16 +106,19 @@ func handleTemplateData(w http.ResponseWriter,
 	//setup switch case for data here
 	switch path {
 	case "/agents.html":
-		log.Println("Godamnit")
-		log.Printf("%#v\n", agents)
+    log.Printf("%#v\n", agents)
 		data["Agents"] = agents
 	default:
 		data = nil
 	}
 
-	log.Printf("%#v\n", data)
+  wat := []Agent {
+    {
+      ID: "adfaf-asdfasf-dfasf-asdf",
+    },
+  }
 
-	err := tmpl.ExecuteTemplate(w, "layout", data)
+	err := tmpl.ExecuteTemplate(w, "layout", wat)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, http.StatusText(500), 500)
