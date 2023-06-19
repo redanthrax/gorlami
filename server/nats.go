@@ -65,6 +65,16 @@ func subscribeNats() {
 	})
 }
 
+func sendConnectionRequest(id string) {
+	log.Printf("Sending connection request to %s", id)
+	msg := []byte("Hello")
+	agent := fmt.Sprintf("agents.%s", id)
+	err := nc.Publish(agent, msg)
+	if err != nil {
+		log.Printf("Unable to send msg: %s", err)
+	}
+}
+
 func monitorNatsAgents() {
 	//for {
 	//	log.Println("Checking nats agents")

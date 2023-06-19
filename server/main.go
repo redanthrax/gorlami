@@ -1,7 +1,8 @@
 package main
 
 func main() {
-  go startNats()
-  go connectNats()
+	go startNats()
+	connectNats()
+	go subscribeNats()
 	startWebServer()
 }

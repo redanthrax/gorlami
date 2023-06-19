@@ -48,10 +48,6 @@ func registerNats() {
 		nc.Subscribe(subject, func(msg *nats.Msg) {
 			request := string(msg.Data)
 			log.Println(request)
-			err := msg.Respond([]byte("pong"))
-			if err != nil {
-				log.Fatal(err)
-			}
 		})
 	}
 
