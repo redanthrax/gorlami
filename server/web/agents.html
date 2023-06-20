@@ -1,5 +1,10 @@
 {{define "title"}}Agents{{end}}
 
 {{define "content"}}
-  <h1>CONTENT</h1>
+<!--Agent list here-->
+<div id="agentlist">
+  {{ range .}}
+  <p>{{.ID}}</p>
+  {{end}}
+</div>
 {{end}}
