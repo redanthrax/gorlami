@@ -44,7 +44,7 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 	lp := filepath.Join("web/templates", "layout.html")
 	fp := ""
 	if r.URL.Path == "/" {
-		fp = "web/templates/index.html"
+		fp = "web/index.html"
 	} else {
 		//make sure we have a good session
 		session := getSession(r)
@@ -53,7 +53,7 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusFound)
 		}
 
-		fp = filepath.Join("web/templates", filepath.Clean(r.URL.Path))
+		fp = filepath.Join("web", filepath.Clean(r.URL.Path))
 	}
 
 	info, err := os.Stat(fp)
@@ -64,7 +64,20 @@ func serveTemplate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tmpl, err := template.ParseFiles(lp, fp)
+  var tmpl *template.Template
+  if r.URL.Path != "/" {
+    files := []string{
+      lp,
+      fp,
+      "web/templates/dash_template.html",
+      "web/templates/components/sidebar.html",
+    }
+
+    tmpl, err = template.ParseFiles(files...)
+  } else {
+	  tmpl, err = template.ParseFiles(lp, fp)
+  }
+
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, http.StatusText(500), 500)
