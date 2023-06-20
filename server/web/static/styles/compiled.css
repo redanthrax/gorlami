@@ -566,10 +566,6 @@ video {
 .-inset-1 {
   inset: -0.25rem;
 }
-.inset-y-0 {
-  top: 0px;
-  bottom: 0px;
-}
 .end-1 {
   inset-inline-end: 0.25rem;
 }
@@ -587,6 +583,9 @@ video {
 }
 .z-20 {
   z-index: 20;
+}
+.col-span-2 {
+  grid-column: span 2 / span 2;
 }
 .float-right {
   float: right;
@@ -1000,6 +999,9 @@ video {
 .grid-flow-col-dense {
   grid-auto-flow: column dense;
 }
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .flex-row {
   flex-direction: row;
 }
@@ -1137,6 +1139,9 @@ video {
 }
 .justify-items-stretch {
   justify-items: stretch;
+}
+.gap-4 {
+  gap: 1rem;
 }
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -1386,11 +1391,11 @@ video {
 .rounded {
   border-radius: 0.25rem;
 }
-.rounded-full {
-  border-radius: 9999px;
-}
 .rounded-lg {
   border-radius: 0.5rem;
+}
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 .rounded-b {
   border-bottom-right-radius: 0.25rem;
@@ -1503,17 +1508,17 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(8 145 178 / var(--tw-bg-opacity));
 }
-.bg-gray-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-.bg-gray-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
 .bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+.bg-indigo-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(165 180 252 / var(--tw-bg-opacity));
+}
+.bg-indigo-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
 }
 .bg-slate-800 {
   --tw-bg-opacity: 1;
@@ -1614,12 +1619,14 @@ video {
 .p-2\.5 {
   padding: 0.625rem;
 }
+.p-4 {
+  padding: 1rem;
+}
 .p-6 {
   padding: 1.5rem;
 }
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+.p-8 {
+  padding: 2rem;
 }
 .px-3 {
   padding-left: 0.75rem;
@@ -1642,12 +1649,6 @@ video {
 }
 .pb-4 {
   padding-bottom: 1rem;
-}
-.pl-10 {
-  padding-left: 2.5rem;
-}
-.pl-3 {
-  padding-left: 0.75rem;
 }
 .pt-0 {
   padding-top: 0px;
@@ -1699,6 +1700,9 @@ video {
 }
 .align-super {
   vertical-align: super;
+}
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .text-2xl {
   font-size: 1.5rem;
@@ -1774,6 +1778,9 @@ video {
   --tw-numeric-fraction: stacked-fractions;
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
 }
+.leading-6 {
+  line-height: 1.5rem;
+}
 .text-\[\#336699\]\/\[\.35\] {
   color: rgb(51 102 153 / .35);
 }
@@ -1784,10 +1791,6 @@ video {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
-}
-.text-gray-800 {
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 .text-gray-900 {
   --tw-text-opacity: 1;
@@ -1943,6 +1946,11 @@ video {
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .outline-none {
@@ -2142,6 +2150,18 @@ video {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
+@media (prefers-color-scheme: dark) {
+
+  .dark\:bg-indigo-800 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(55 48 163 / var(--tw-bg-opacity));
+  }
+
+  .dark\:text-indigo-400 {
+    --tw-text-opacity: 1;
+    color: rgb(129 140 248 / var(--tw-text-opacity));
+  }
+}
 @media (min-width: 640px) {
 
   .sm\:w-auto {
@@ -2183,10 +2203,6 @@ video {
 
   .lg\:flex {
     display: flex;
-  }
-
-  .lg\:hidden {
-    display: none;
   }
 
   .lg\:p-16 {

@@ -134,6 +134,6 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 		clearSessionCookie(w)
 	}
 
-	w.Header().Set("HX-Redirect", "/")
+  http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 }
 

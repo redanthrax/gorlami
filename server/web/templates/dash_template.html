@@ -1,8 +1,8 @@
 {{define "main"}}
-<div class="flex overflow-hidden bg-white">
+<div class="flex overflow-hidden">
   {{template "side" .}}
   <div id="main-content"
-    class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+    class="h-full w-full relative overflow-y-auto lg:ml-64">
     <main>
       {{template "content" .}}
     </main>
