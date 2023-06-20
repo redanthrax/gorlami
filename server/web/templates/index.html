@@ -1,20 +1,35 @@
 {{define "title"}}Login{{end}}
 
 {{define "body"}}
-<div class="grid h-screen place-items-center">
-    <form hx-post="/login" class="grid grid-cols-1">
-        <div class="m-2">
-            <label for="username" class="text-white">User</label>
-            <input type="text" name="username" />
+
+<div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 pt-8 pt:mt-0">
+    <!-- Card -->
+    <div class="bg-white shadow rounded-lg md:mt-0 w-full sm:max-w-screen-sm xl:p-0">
+        <div class="p-6 sm:p-8 lg:p-16 space-y-8">
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">
+                Sign in
+            </h2>
+            <form class="mt-8 space-y-6" hx-post="/login">
+                <div>
+                    <label for="username" class="text-sm font-medium text-gray-900 block mb-2">Your email</label>
+                    <input type="username" name="username" id="username" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="username" required>
+                </div>
+                <div>
+                    <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Your password</label>
+                    <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                    <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-cyan-200 h-4 w-4 rounded">
+                    </div>
+                    <div class="text-sm ml-3">
+                    <label for="remember" class="font-medium text-gray-900">Remember me</label>
+                    </div>
+                    <a href="#" class="text-sm text-teal-500 hover:underline ml-auto">Lost Password?</a>
+                </div>
+                <button type="submit" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-base px-5 py-3 w-full sm:w-auto text-center">Login to your account</button>
+            </form>
         </div>
-        <div class="m-2">
-            <label for="password" class="text-white">Pass</label>
-            <input type="password" name="password" />
-        </div>
-        <button type="submit" 
-            class="bg-white p-2 rounded m-2">
-            Login
-        </button>
-    </form>
+    </div>
 </div>
 {{end}}
