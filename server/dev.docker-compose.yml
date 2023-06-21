@@ -1,0 +1,12 @@
+version: '3.6'
+
+services:
+  server:
+    container_name: dev-gorlami-server
+    image: dev-gorlami-server
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/go/src/redanthrax/gorlami-server
+    build:
+      dockerfile: dev.Dockerfile

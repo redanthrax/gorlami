@@ -1,0 +1,13 @@
+{{define "title"}}Agents{{end}}
+
+{{define "content"}}
+<!--Agent list here-->
+<div class="relative rounded-xl overflow-auto p-8">
+  <div id="agentlist" class="grid grid-cols-3 gap-4 font-mono text-white text-sm text-center font-bold leading-6">
+    {{ range .}}
+    <div class="p-4 rounded-lg shadow-lg bg-indigo-500 col-span-2">{{.ID}}</div>
+    <a href="/connect.html?id={{.ID}}" class="p-4 rounded-lg bg-indigo-300 dark:bg-indigo-800 dark:text-indigo-400">Connect</a>
+    {{end}}
+  </div>
+</div>
+{{end}}

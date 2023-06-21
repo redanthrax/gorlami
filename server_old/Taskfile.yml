@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  front:
+    cmds:
+      - go build -o gorlami.exe
+      - ./gorlami.exe
+  run:
+    cmds:
+      - cd web && postcss static/styles/main.css -o static/styles/compiled.css
+      - go build -o gorlami.exe
+      - ./gorlami.exe

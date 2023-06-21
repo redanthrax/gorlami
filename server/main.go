@@ -1,8 +1,8 @@
 package main
 
+import "log"
+
 func main() {
-	go startNats()
-	connectNats()
-	go subscribeNats()
-	startWebServer()
+	log.Println("Starting Gorlami server.")
+	startWebserver()
 }
