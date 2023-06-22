@@ -12,6 +12,7 @@ func startWebserver() {
 	http.Handle("/static/", static)
 	//setup root view
 	http.HandleFunc("/", handleView)
+	http.HandleFunc("/login", handleLogin)
 	log.Println("Listening on port 3000.")
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }
@@ -29,4 +30,8 @@ func handleView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.ExecuteTemplate(w, "base", nil)
+}
+
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+
 }

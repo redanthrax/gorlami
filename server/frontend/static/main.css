@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.input {
+    @apply bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white;
+}
+.button {
+    @apply w-full text-white bg-rose-600 hover:bg-rose-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center;
+}
+.h1 {
+    @apply text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white
+}
+.label {
+    @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
+}
