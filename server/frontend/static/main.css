@@ -14,3 +14,12 @@
 .label {
     @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
 }
+
+.fadeOut {
+    animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+}

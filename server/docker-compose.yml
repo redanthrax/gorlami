@@ -5,7 +5,7 @@ services:
     container_name: gorlami-server
     image: gorlami-server
     ports:
-      - 3000:3000
+      - 9001:9001
     volumes:
       - ./:/go/src/redanthrax/gorlami-server
     build:

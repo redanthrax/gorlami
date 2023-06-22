@@ -6,10 +6,12 @@
                 <h1 class="h1">
                     Sign in
                 </h1>
-                <form class="space-y-4 md:space-y-6" action="#">
+                <form class="space-y-4 md:space-y-6" 
+                    hx-post="/login" hx-trigger="submit" hx-target="#alert"
+                    hx-swap="fadeout" hx-ext="swap:swapme">
                     <div>
-                        <label for="email" class="label">Username</label>
-                        <input type="email" name="email" id="email"
+                        <label for="username" class="label">Username</label>
+                        <input type="username" name="username" id="username"
                             class="input" placeholder="username" required="">
                     </div>
                     <div>

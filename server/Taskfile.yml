@@ -6,6 +6,9 @@ tasks:
   css:
     cmds:
       - 'cd frontend && postcss static/main.css -o static/compiled.css'
+  dockerdevbuild:
+    cmds:
+      - 'docker compose -f dev.docker-compose.yml build'
   dockerdev:
     cmds:
       - 'docker compose -f dev.docker-compose.yml up'
