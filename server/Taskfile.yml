@@ -1,0 +1,8 @@
+version: '3'
+tasks:
+  css:
+    cmds:
+      - 'cd frontend && postcss static/main.css -o static/compiled.css'
+  dockerdev:
+    cmds:
+      - 'docker compose -f dev.docker-compose.yml up'
