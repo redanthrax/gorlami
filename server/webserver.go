@@ -13,6 +13,7 @@ func startWebserver() {
 	//setup root view
 	http.HandleFunc("/", handleView)
 	http.HandleFunc("/login", handleLogin)
+	http.HandleFunc("/logout", handleLogout)
 	log.Println("Listening on port 9001.")
 	log.Fatal(http.ListenAndServe(":9001", nil))
 }
@@ -30,6 +31,10 @@ func handleView(w http.ResponseWriter, r *http.Request) {
 		files = append(files,
 			"frontend/templates/dash_base.html",
 			"frontend/agents.html")
+	case "/settings.html":
+		files = append(files,
+			"frontend/templates/dash_base.html",
+			"frontend/settings.html")
 	default:
 		http.NotFound(w, r)
 	}
@@ -66,4 +71,9 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
+}
+
+func handleLogout(w http.ResponseWriter, r *http.Request) {
+	//clear session data
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
