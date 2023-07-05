@@ -10,3 +10,8 @@ services:
       - ./:/go/src/redanthrax/gorlami-server
     build:
       dockerfile: dev.Dockerfile
+  nats:
+    container_name: dev-nats-server
+    image: nats:latest
+    ports:
+      - 4222:4222

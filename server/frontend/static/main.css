@@ -27,3 +27,9 @@
     0% {opacity: 1;}
     100% {opacity: 0;}
 }
+.alerty {
+    @apply fadeOut p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400;
+}
+.buttonlink {
+    @apply inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg focus:ring-4 focus:outline-none bg-blue-600 hover:bg-blue-700 focus:ring-blue-800;
+}

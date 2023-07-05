@@ -18,7 +18,7 @@ RUN npm install
 WORKDIR /go/src/redanthrax/gorlami-server
 
 COPY go.mod ./
-#COPY go.sum ./
+COPY go.sum ./
 RUN go mod download
 
 COPY . .
